@@ -9,7 +9,7 @@
 import UIKit
 
 protocol SearchResultsControllerDelegate: class {
-    func didClickResult(searchResultsController: SearchResultsController, didSelectRowAtIndexPath indexPath: NSIndexPath)
+    func didClickResult(_ searchResultsController: SearchResultsController, didSelectRowAtIndexPath indexPath: IndexPath)
 }
 
 class SearchResultsController: UIViewController {
@@ -44,11 +44,11 @@ class SearchResultsController: UIViewController {
 
 //MARK: Private
 extension SearchResultsController {
-    private func buildUserInterface() {
-        tableView = UITableView(frame: CGRectMake(0, fixedTableViewOriginY, view.bounds.width, view.bounds.height), style: .Plain)
+    fileprivate func buildUserInterface() {
+        tableView = UITableView(frame: CGRect(x: 0, y: fixedTableViewOriginY, width: view.bounds.width, height: view.bounds.height), style: .plain)
         view.addSubview(tableView)
         
-        tableView.backgroundColor = UIColor.lightGrayColor()
+        tableView.backgroundColor = UIColor.lightGray
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -56,10 +56,10 @@ extension SearchResultsController {
         tableView.tableFooterView = UIView()
     }
     
-    private func searchKeywords(keywords: String) {
+    fileprivate func searchKeywords(_ keywords: String) {
         dataSource.removeAll()
         for str in originalDataSource {
-            guard let _ = str.rangeOfString(keywords) else {
+            guard let _ = str.range(of: keywords) else {
                 continue
             }
             dataSource.append(str)
@@ -70,23 +70,23 @@ extension SearchResultsController {
 
 //MARK: UITableViewDataSource
 extension SearchResultsController: UITableViewDataSource {
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSource.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellIdentifier = "Cell"
         
-        var cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
+        var cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier)
         if cell == nil {
-            cell = UITableViewCell(style: .Default, reuseIdentifier: cellIdentifier)
+            cell = UITableViewCell(style: .default, reuseIdentifier: cellIdentifier)
         }
         
-        cell?.backgroundColor = UIColor.clearColor()
+        cell?.backgroundColor = UIColor.clear
         
         cell?.textLabel?.text = dataSource[indexPath.row]
         
@@ -95,15 +95,15 @@ extension SearchResultsController: UITableViewDataSource {
 }
 
 extension SearchResultsController: UITableViewDelegate {
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         delegate?.didClickResult(self, didSelectRowAtIndexPath: indexPath)
     }
 }
 
 //MARK: UISearchResultsUpdating
 extension SearchResultsController: UISearchResultsUpdating {
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) {
         if self.searchController == nil {
             self.searchController = searchController
         }
@@ -115,7 +115,7 @@ extension SearchResultsController: UISearchResultsUpdating {
 }
 
 extension SearchResultsController {
-    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         searchController.searchBar.resignFirstResponder()
     }
 }

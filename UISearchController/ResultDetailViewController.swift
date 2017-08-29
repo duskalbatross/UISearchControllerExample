@@ -25,14 +25,14 @@ class ResultDetailViewController: UIViewController {
 
 //MARK: Private
 extension ResultDetailViewController {
-    private func buildUserInterface() {
+    fileprivate func buildUserInterface() {
         let label = UILabel(frame: view.bounds)
-        label.font = UIFont.systemFontOfSize(25)
-        label.textAlignment = .Center
+        label.font = UIFont.systemFont(ofSize: 25)
+        label.textAlignment = .center
         label.text = result
 
         view.addSubview(label)
         
-        view.backgroundColor = UIColor.whiteColor()
+        view.backgroundColor = UIColor.white
     }
 }

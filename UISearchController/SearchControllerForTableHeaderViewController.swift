@@ -31,7 +31,7 @@ class SearchControllerForTableHeaderViewController: UIViewController {
 
 //MARK: Private
 extension SearchControllerForTableHeaderViewController {
-    private func buildUserInterface() {
+    fileprivate func buildUserInterface() {
         //此示例应用场景类似微信首页搜索
         title = "ForTableHeaderView"
         
@@ -39,7 +39,7 @@ extension SearchControllerForTableHeaderViewController {
         //Warnning: definesPresentationContext = true可能会对同一nav下的其他页面产生影响导致一些诡异bug，建议在viewWillDisappear时强制设置为默认的definesPresentationContext = false
         definesPresentationContext = false
 
-        tableView = UITableView(frame: view.bounds, style: .Plain)
+        tableView = UITableView(frame: view.bounds, style: .plain)
         view.addSubview(tableView)
         
         tableView.dataSource = self
@@ -50,7 +50,7 @@ extension SearchControllerForTableHeaderViewController {
         tableView.tableHeaderView = searchControllerForTableHeaderView.searchBar
     }
     
-    private func buildSearchController(inout searchController: UISearchController!){
+    fileprivate func buildSearchController(_ searchController: inout UISearchController!){
         let searchResultsVC = SearchResultsController()
 
         searchResultsVC.originalDataSource = dataSource
@@ -63,8 +63,8 @@ extension SearchControllerForTableHeaderViewController {
         //若searchResultsUpdater的代理只需设置当前vc即可满足需求，searchResultsController传入nil即可
         searchController = UISearchController(searchResultsController: searchResultsVC)
         
-        searchController.searchBar.frame = CGRectMake(0, 0, view.bounds.width, 44)
-        searchController.searchBar.keyboardType = .NumberPad
+        searchController.searchBar.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 44)
+        searchController.searchBar.keyboardType = .numberPad
 
         searchController.hidesNavigationBarDuringPresentation = true
         searchController.dimsBackgroundDuringPresentation = true
@@ -72,10 +72,10 @@ extension SearchControllerForTableHeaderViewController {
         //更改取消按钮颜色，若直接设置UISearchController.searchBar.tintColor会导致光标颜色改变
         if #available(iOS 9.0, *) {
             //此方法仅对9.0之后版本生效
-            UIBarButtonItem.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).tintColor = UIColor.whiteColor()
+            UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.white
         } else {
             //对9.0之前版本需桥接OC版对UIBarButtonItem的扩展
-            UIBarButtonItem.my_appearanceWhenContainedIn(UISearchBar.self).tintColor = UIColor.whiteColor()
+            UIBarButtonItem.my_appearanceWhenContained(in: UISearchBar.self).tintColor = UIColor.white
         }
         
         //Bug: 向searchBar中粘贴字符串或者代码控制直接像searchBar.text赋值，键盘上的搜索按钮依然处于失效状态
@@ -90,7 +90,7 @@ extension SearchControllerForTableHeaderViewController {
         searchController.searchBar.delegate = self
     }
     
-    private func generateDataSource() {
+    fileprivate func generateDataSource() {
         for i in 0 ..< 100 {
             let str = String(i)
             dataSource.append(str)
@@ -100,20 +100,20 @@ extension SearchControllerForTableHeaderViewController {
 
 //MARK: UITableViewDataSource
 extension SearchControllerForTableHeaderViewController: UITableViewDataSource {
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSource.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellIdentifier = "Cell"
         
-        var cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
+        var cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier)
         if cell == nil {
-            cell = UITableViewCell(style: .Default, reuseIdentifier: cellIdentifier)
+            cell = UITableViewCell(style: .default, reuseIdentifier: cellIdentifier)
         }
         
         cell?.textLabel?.text = dataSource[indexPath.row]
@@ -124,21 +124,21 @@ extension SearchControllerForTableHeaderViewController: UITableViewDataSource {
 
 //MARK: UISearchControllerDelegate
 extension SearchControllerForTableHeaderViewController: UISearchControllerDelegate {
-    func willPresentSearchController(searchController: UISearchController) {
+    func willPresentSearchController(_ searchController: UISearchController) {
         //若需要在无输入时亦展示searchResultsController.view,需执行此句,必须在主线程中执行
-        dispatch_async(dispatch_get_main_queue()) { () -> Void in
-            searchController.searchResultsController!.view.hidden = false;
+        DispatchQueue.main.async { () -> Void in
+            searchController.searchResultsController!.view.isHidden = false;
         }
     }
     
-    func didPresentSearchController(searchController: UISearchController) {
+    func didPresentSearchController(_ searchController: UISearchController) {
         //对于由代码主动发起的searchController进入active状态，需在此设置        searchController.searchBar.becomeFirstResponder()
     }
 }
 
 //MARK: UISearchBarDelegate
 extension SearchControllerForTableHeaderViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         //点击键盘上的搜索按钮时执行此代理，可按实际需求进行处理
         print("didClickSearchBuuton")
     }
@@ -146,11 +146,11 @@ extension SearchControllerForTableHeaderViewController: UISearchBarDelegate {
 
 //MARK: SearchResultsControllerDelegate
 extension SearchControllerForTableHeaderViewController: SearchResultsControllerDelegate {
-    func didClickResult(searchResultsController: SearchResultsController, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        searchControllerForTableHeaderView.active = false
+    func didClickResult(_ searchResultsController: SearchResultsController, didSelectRowAtIndexPath indexPath: IndexPath) {
+        searchControllerForTableHeaderView.isActive = false
         
         //延时0.5s，确保transition animation完成，防止产生UI异常
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { () -> Void in
             let result = searchResultsController.dataSource[indexPath.row]
             
             let resultDetailVC = ResultDetailViewController()
